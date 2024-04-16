@@ -26,7 +26,7 @@ class LockingMiddleware implements Middleware
      * @param object   $command
      * @param callable $next
      *
-     * @throws \Exception
+     * @throws \Throwable
      *
      * @return mixed|void
      */
@@ -43,7 +43,7 @@ class LockingMiddleware implements Middleware
 
         try {
             $returnValue = $this->executeQueuedJobs();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->isExecuting = false;
             $this->queue = [];
             throw $e;

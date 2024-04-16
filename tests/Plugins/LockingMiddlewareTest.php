@@ -111,6 +111,26 @@ class LockingMiddlewareTest extends TestCase
         );
     }
 
+    public function testErrorDoNotLeaveTheCommandBusLocked()
+    {
+        $next = function () {
+            throw new \Error();
+        };
+
+        try {
+            $this->lockingMiddleware->execute(new AddTaskCommand(), $next);
+        } catch (\Error $e) {
+        }
+
+        $next2 = function () use (&$executed) {
+            return true;
+        };
+        $this->assertTrue(
+            $this->lockingMiddleware->execute(new AddTaskCommand(), $next2),
+            'Second command was not executed'
+        );
+    }
+
     public function testExceptionsDoNotLeaveQueuedCommandsInTheBus()
     {
         $next = function () {
